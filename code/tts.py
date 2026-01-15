@@ -6,18 +6,36 @@
 
 import pyttsx3
 
+from config import TTS_RATE,TTS_VOLUME
+
+
 # 全局变量
 engine = None
 
+
+def speak(text):
+    """ 文字转语音输出 """
+    global engine
+    if engine is None:
+        _init_engine()
+    
+    print(f"助手: {text}")
+    try:
+        engine.say(text)
+        engine.runAndWait()
+    except Exception as e:
+        print(f"TTS 错误: {e}")
+
+
+
 def _init_engine():
-    """初始化TTS引擎（内部函数）"""
+
     global engine
     if engine is not None:
         return
     
     engine = pyttsx3.init()
 
-    # 自动寻找中文语音包
     voices = engine.getProperty('voices')
     found_zh = False
     for v in voices:
@@ -25,6 +43,7 @@ def _init_engine():
             engine.setProperty('voice', v.id)
             found_zh = True
             print(f"TTS 已切换中文: {v.id}")
+            
             break
 
     if not found_zh:
@@ -33,18 +52,6 @@ def _init_engine():
         except:
             pass
 
-    engine.setProperty('rate', 165)  # 语速
-    engine.setProperty('volume', 1.0) # 音量
-
-def speak(text):
-    """ 文字转语音输出 """
-    global engine
-    if engine is None:
-        _init_engine()
+    engine.setProperty('rate', TTS_RATE)  
+    engine.setProperty('volume', TTS_VOLUME) 
     
-    print(f"\n助手: {text}")
-    try:
-        engine.say(text)
-        engine.runAndWait()
-    except Exception as e:
-        print(f"TTS 错误: {e}")
