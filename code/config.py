@@ -21,9 +21,9 @@ TTS_VOLUME = 1.0  # 语音合成音量
 # --- AI模型配置 ---
 OLLAMA_URL = "http://127.0.0.1:11434/api/chat"
 OLLAMA_TAGS_URL = "http://127.0.0.1:11434/api/tags"
-AI_MODEL = "qwen2.5:1.5b"  # 默认模型
-AI_TIMEOUT = 15  # AI请求超时时间（秒）
-SERVICE_CHECK_TIMEOUT = 5  # 服务检查超时时间（秒）
+AI_MODEL = "qwen2.5:1.5b"  
+AI_TIMEOUT = 15  # AI请求超时时间
+SERVICE_CHECK_TIMEOUT = 5  # 服务检查超时时间
 
 # --- 唤醒词配置 ---
 WAKE_WORDS = ["助手", "你好", "请问", "帮助"]
@@ -31,10 +31,12 @@ WAKE_WORDS = ["助手", "你好", "请问", "帮助"]
 # --- 系统提示词 ---
 SYSTEM_PROMPT = """
 你是一个智能语音助手小Q，运行在树莓派上。
-请用友好、自然的语气与用户对话，回答要简洁明了。
-如果用户询问你的能力，可以介绍你是离线运行的语音助手。
+请跳过思考，直接回答。
+回答要简洁，控制在10~25字之内。
+你是离线运行的语音助手。
 """
 
 # --- 音频处理配置 ---
-MIN_TEXT_LENGTH = 2  # 最小文本长度（过滤短噪音）
+MIN_TEXT_LENGTH = 2  # 最小文本长度
 MIN_NON_WAKE_TEXT_LENGTH = 3  # 非唤醒词的最小文本长度
+
