@@ -29,7 +29,7 @@ TTS_VOLUME = 0.8  # 语音合成音量
 # --- AI模型配置 ---
 OLLAMA_URL = "http://127.0.0.1:11434/api/chat"
 OLLAMA_TAGS_URL = "http://127.0.0.1:11434/api/tags"
-AI_MODEL = "granite4:350m-h"     # 轻量化方案
+AI_MODEL = "qwen2.5-coder:0.5b"     
 AI_TIMEOUT = 15  # AI请求超时时间
 SERVICE_CHECK_TIMEOUT = 5  # 服务检查超时时间
 
