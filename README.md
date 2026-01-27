@@ -48,7 +48,7 @@
 
 ### 系统依赖
 - Python 3.7+
-- rasPi OS 64bit
+- RASPi OS 64bit
 - 中文语音包
 
 ### Python包依赖
@@ -283,6 +283,7 @@ ctl.!default {
 - ASR模块：替换为其他语音识别引擎
 - TTS模块：替换为其他语音合成引擎
 - AI模块：替换为其他本地AI模型
+
 
 
 
