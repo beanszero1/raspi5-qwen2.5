@@ -8,6 +8,11 @@ export ALIBABA_CLOUD_ACCESS_KEY_ID='您的阿里云访问密钥ID'
 export ALIBABA_CLOUD_ACCESS_KEY_SECRET='您的阿里云访问密钥密码'
 export WORKSPACE_ID='您的阿里云百炼业务空间ID'
 
+# 注意这个DASHSCOPE与百炼实际上是阿里的两个平台
+# https://dashscope.console.aliyun.com/apiKey
+export DASHSCOPE_APP_ID="你的应用ID"
+export DASHSCOPE_API_KEY="你的API密钥"
+
 ```
 
 其中WORKSPACE_ID可以在左下角的“业务空间详情“查看。
@@ -37,3 +42,10 @@ export WORKSPACE_ID='xxxxxxxx'
 
  
 
+### 智能体应用参考文档
+
+[大模型服务平台百炼控制台](https://bailian.console.aliyun.com/cn-beijing/?tab=api#/api/?type=app&url=3003869)
+
+test_app.py用于调试智能体应用，需要在阿里云百炼平台的应用管理上发布后，具有应用ID才能调用。
+
+test_SDK.py用来调试知识库，以SDK接口的方式。
