@@ -49,3 +49,5 @@ export WORKSPACE_ID='xxxxxxxx'
 test_app.py用于调试智能体应用，需要在阿里云百炼平台的应用管理上发布后，具有应用ID才能调用。
 
 test_SDK.py用来调试知识库，以SDK接口的方式。
+
+建议配置后先用test文件测试一下接口是否正常使用再做后续开发
