@@ -47,7 +47,7 @@ OLED_WIDTH = config.OLED_WIDTH
 OLED_HEIGHT = config.OLED_HEIGHT
 OLED_FONT_SIZE = config.OLED_FONT_SIZE
 OLED_LINE_HEIGHT = config.OLED_LINE_HEIGHT
-OLED_STARTUP_ANIMATION_DURATION = config.OLED_STARTUP_ANIMATION_DURATION  # 开机动画持续时间（秒）
+OLED_STARTUP_ANIMATION_DURATION = config.OLED_STARTUP_ANIMATION_DURATION  # 开机动画持续时间
 
 # 边框配置
 OLED_SHOW_BORDER = getattr(config, 'OLED_SHOW_BORDER', False)  # 是否显示完整边框
@@ -181,24 +181,201 @@ class OLEDDisplay:
     
     def show_startup_animation(self):
         """
-        显示开机动画
-        持续约2秒，分阶段显示信息
+        显示丰富的开机动画
+        持续约7.0秒，包含图形、大字体和系统信息
         """
-        logger.info("显示开机动画...")
+        logger.info("显示丰富的开机动画...")
         
-        total_duration = OLED_STARTUP_ANIMATION_DURATION
-        steps = [
-            ("语音助手", 0.5),
-            ("正在启动...", 0.5),
-            ("请稍候", 0.5),
-            ("等待指令", 0.5),
-        ]
+
+        self._display_title_screen()
+        time.sleep(2.0)
         
-        for text, duration in steps:
-            self._display_full_screen_text(text)
-            time.sleep(duration)
+        self._display_system_info()
+        time.sleep(2.0)
+        
+
+        self._display_loading_animation()
+        time.sleep(1.5)
+        
+
+        self._display_ready_state()
+
         
         logger.info("开机动画完成")
+    
+    def show_shutdown_animation(self):
+        """
+        显示关机动画,持续2秒
+        """
+        logger.info("显示关机动画...")
+        
+        self._display_shutdown_message()
+        time.sleep(1.0)
+        
+
+        self._display_goodbye_message()
+        time.sleep(1.5)
+        
+        logger.info("关机动画完成")
+    
+    def _display_shutdown_message(self):
+        """显示正在退出消息"""
+        with self._get_canvas() as draw:
+            # 清屏
+            draw.rectangle([0, 0, self.width-1, self.height-1], fill="black")
+            
+            # 显示"正在退出..."
+            shutdown_text = "正在退出..."
+            text_width = self.chinese_font.getlength(shutdown_text)
+            
+            # 垂直居中
+            text_x = (self.width - text_width) // 2
+            text_y = (self.height - self.line_height) // 2
+            
+            draw.text((text_x, text_y), shutdown_text, font=self.chinese_font, fill="white")
+            
+            # 底部显示提示
+            hint_text = "语音助手"
+            hint_font = get_chinese_font(10)
+            hint_width = hint_font.getlength(hint_text)
+            draw.text(((self.width - hint_width) // 2, self.height - 15), hint_text, font=hint_font, fill="white")
+    
+    def _display_goodbye_message(self):
+        """显示再见消息"""
+        with self._get_canvas() as draw:
+            # 清屏
+            draw.rectangle([0, 0, self.width-1, self.height-1], fill="black")
+            
+            # 显示"再见"
+            goodbye_text = "再见"
+            text_width = self.chinese_font.getlength(goodbye_text)
+            
+            # 垂直居中
+            text_x = (self.width - text_width) // 2
+            text_y = (self.height - self.line_height) // 2
+            
+            draw.text((text_x, text_y), goodbye_text, font=self.chinese_font, fill="white")
+            
+            # 底部显示提示
+            hint_text = "感谢使用"
+            hint_font = get_chinese_font(10)
+            hint_width = hint_font.getlength(hint_text)
+            draw.text(((self.width - hint_width) // 2, self.height - 15), hint_text, font=hint_font, fill="white")
+    
+    def _display_title_screen(self):
+        """显示标题屏幕 - 大字体和图形"""
+        with self._get_canvas() as draw:
+            # 清屏
+            draw.rectangle([0, 0, self.width-1, self.height-1], fill="black")
+            
+            # 绘制顶部和底部的装饰线条
+            draw.line([10, 5, self.width-10, 5], fill="white", width=2)
+            draw.line([10, self.height-6, self.width-10, self.height-6], fill="white", width=2)
+            
+
+            try:
+                if PIL_AVAILABLE:
+                    title_font = get_chinese_font(16)
+                else:
+                    title_font = self.chinese_font
+            except:
+                title_font = self.chinese_font
+            
+            # 显示大标题
+            title_text = "语音助手"
+            title_width = title_font.getlength(title_text)
+            title_x = (self.width - title_width) // 2
+            draw.text((title_x, 15), title_text, font=title_font, fill="white")
+            
+            # 显示版本信息
+            version_text = "v1.0"
+            version_font = get_chinese_font(10)
+            version_width = version_font.getlength(version_text)
+            version_x = (self.width - version_width) // 2
+            draw.text((version_x, 35), version_text, font=version_font, fill="white")
+    
+    def _display_system_info(self):
+        """显示系统信息"""
+        with self._get_canvas() as draw:
+            # 清屏
+            draw.rectangle([0, 0, self.width-1, self.height-1], fill="black")
+            
+            # 显示标题
+            title_text = "系统信息"
+            title_width = self.chinese_font.getlength(title_text)
+            draw.text(((self.width - title_width) // 2, 5), title_text, font=self.chinese_font, fill="white")
+            
+
+            
+            # 显示系统状态信息
+            info_lines = [
+                "Raspberry Pi 5",
+                "OLED 128x64",
+                "中文语音助手"
+            ]
+            
+            # 计算垂直居中位置
+            total_height = len(info_lines) * self.line_height
+            start_y = (self.height - total_height) // 2
+            
+            # 显示每行信息
+            for i, line in enumerate(info_lines):
+                y_pos = start_y + i * self.line_height
+                draw.text((10, y_pos), line, font=self.chinese_font, fill="white")
+    
+    def _display_loading_animation(self):
+        """显示加载动画"""
+        with self._get_canvas() as draw:
+            # 清屏
+            draw.rectangle([0, 0, self.width-1, self.height-1], fill="black")
+            
+            # 显示加载中文字
+            loading_text = "正在初始化..."
+            text_width = self.chinese_font.getlength(loading_text)
+            draw.text(((self.width - text_width) // 2, 15), loading_text, font=self.chinese_font, fill="white")
+            
+            # 绘制进度条背景
+            progress_bar_y = 35
+            progress_bar_height = 8
+            progress_bar_width = self.width - 30
+            
+            # 进度条背景
+            draw.rectangle([15, progress_bar_y, 15+progress_bar_width, progress_bar_y+progress_bar_height], 
+                          outline="white", fill="black")
+            
+            # 进度条前景（动态增长）
+            for i in range(4):  # 4个阶段
+                segment_width = progress_bar_width // 4
+                segment_x = 15 + i * segment_width
+                
+                draw.rectangle([segment_x, progress_bar_y+1, segment_x+segment_width-2, progress_bar_y+progress_bar_height-1], 
+                              fill="white")
+                
+                # 在实际硬件上，这里应该有延迟，但模拟模式下我们直接画完
+                if not self.simulate:
+                    time.sleep(0.05)
+    
+    def _display_ready_state(self):
+        """显示就绪状态（简化版，只显示等待指令）"""
+        with self._get_canvas() as draw:
+            # 清屏
+            draw.rectangle([0, 0, self.width-1, self.height-1], fill="black")
+            
+            # 只显示"等待指令"居中
+            prompt_text = "等待指令"
+            prompt_width = self.chinese_font.getlength(prompt_text)
+            
+            # 垂直居中
+            prompt_x = (self.width - prompt_width) // 2
+            prompt_y = (self.height - self.line_height) // 2
+            
+            draw.text((prompt_x, prompt_y), prompt_text, font=self.chinese_font, fill="white")
+            
+            # 底部小提示（10pt字体，根据用户要求）
+            hint_text = "按空格键说话"
+            hint_font = get_chinese_font(10)  # 从8pt改为10pt，更大更清晰
+            hint_width = hint_font.getlength(hint_text)
+            draw.text(((self.width - hint_width) // 2, self.height - 15), hint_text, font=hint_font, fill="white")
     
     def _get_canvas(self):
         """获取画布上下文管理器"""
@@ -407,6 +584,17 @@ def cleanup_oled():
     if _oled_instance:
         _oled_instance.cleanup()
         _oled_instance = None
+
+def show_shutdown_animation():
+    """显示关机动画（便捷函数）"""
+    global _oled_instance
+    if _oled_instance:
+        try:
+            _oled_instance.show_shutdown_animation()
+        except Exception as e:
+            logger.error(f"显示关机动画失败: {e}")
+    else:
+        logger.warning("OLED实例不存在，无法显示关机动画")
 
 
 def test_oled():
