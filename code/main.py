@@ -153,7 +153,13 @@ def main():
     except Exception as e:
         print(f"系统错误: {e}")
     finally:
-
+        # 显示OLED关机动画（如果启用）
+        if config.OLED_ENABLED:
+            try:
+                oled_display.show_shutdown_animation()
+            except Exception as e:
+                logger.error(f"显示关机动画失败: {e}")
+        
         keyboard_listener.restore_keyboard_settings(old_settings)
         asr.cleanup_asr()
         print("资源清理完成")
