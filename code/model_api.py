@@ -1,22 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 AI模型API模块
-通过Ollama与模型进行交互，集成百炼SDK流式调用
+通过Ollama与模型进行交互，集成DIFY API调用
 """
 
 import os
 import requests
 import config
 
-try:
-    from dashscope import Application
-    from http import HTTPStatus
-    DASHSCOPE_AVAILABLE = True
-except ImportError:
-    DASHSCOPE_AVAILABLE = False
-
-# 百炼SDK会话管理
-_bailian_session_id = None
+# DIFY会话管理（conversation_id）
+_dify_conversation_id = None
 
 
 def classify_query(text):
@@ -56,12 +49,11 @@ def classify_query(text):
         return "通用问题"
 
 
-def ask_ai_bailian_stream(text, conversation_history=None):
+def ask_ai_dify_stream(text, conversation_history=None):
     """
-    使用百炼SDK进行非流式调用
+    使用DIFY API进行调用
     在用户问题后添加"将回答总结成30~50字左右"以缩短回答
-    使用百炼SDK内置的session_id机制实现多轮对话记忆
-    （conversation_history参数保留但不使用，仅用于兼容性）
+    使用DIFY的conversation_id机制实现多轮对话记忆
     
     Args:
         text: 当前用户问题
@@ -69,55 +61,62 @@ def ask_ai_bailian_stream(text, conversation_history=None):
         
     Returns: 生成器，只产生一个完整的回答文本
     """
-    global _bailian_session_id
+    global _dify_conversation_id
     
-    if not DASHSCOPE_AVAILABLE:
-        yield "错误：dashscope库未安装"
-        return
-        
-    api_key = os.getenv("DASHSCOPE_API_KEY")
+    # 获取API Key
+    api_key = os.getenv(config.DIFY_API_KEY_ENV)
     if not api_key:
-        yield "错误：环境变量DASHSCOPE_API_KEY未设置"
-        return
-        
-    if not config.BAILIAN_APP_ID:
-        yield "错误：百炼应用ID未配置"
+        yield f"错误：环境变量{config.DIFY_API_KEY_ENV}未设置"
         return
     
     try:
+        # 构建请求URL
+        url = f"{config.DIFY_API_BASE_URL}{config.DIFY_API_ENDPOINT}"
+        
         # 构建prompt：在用户问题后添加总结要求
         prompt_with_summary = f"{text}。将回答总结成30~50字左右"
         
-        # 非流式调用，使用session_id实现多轮对话
-        response = Application.call(
-            api_key=api_key,
-            app_id=config.BAILIAN_APP_ID,
-            prompt=prompt_with_summary,
-            session_id=_bailian_session_id,  # 使用之前保存的session_id（如果有）
-            stream=False  # 非流式
+        # 请求头
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        # 请求数据
+        payload = {
+            "inputs": {},  # 输入参数
+            "query": prompt_with_summary,  # 用户输入的问题（包含总结要求）
+            "response_mode": config.DIFY_RESPONSE_MODE,
+            "conversation_id": _dify_conversation_id or "",  # 使用之前保存的conversation_id（如果有）
+            "user": config.DIFY_USER_ID
+        }
+        
+        # 发送POST请求
+        response = requests.post(
+            url,
+            headers=headers,
+            json=payload,
+            timeout=config.DIFY_TIMEOUT
         )
         
         # 检查响应状态
-        if response.status_code != HTTPStatus.OK:
-            # 如果调用失败，重置session_id
-            _bailian_session_id = None
-            yield f"错误: {response.status_code} - {response.message}"
-            return
+        response.raise_for_status()
         
-        # 处理完整响应
-        full_text = ""
-        if hasattr(response.output, 'text'):
-            full_text = response.output.text
-        elif hasattr(response, 'output') and hasattr(response.output, 'choices'):
-            # 备用方式获取文本
-            full_text = response.output.choices[0].message.content if response.output.choices else ""
+        # 解析响应数据
+        result = response.json()
         
-        # 更新session_id用于下一轮对话
-        if hasattr(response.output, 'session_id') and response.output.session_id:
-            _bailian_session_id = response.output.session_id
+        # 提取回答文本
+        full_text = result.get("answer", "")
+        if not full_text:
+            full_text = result.get("text", "")  # 备用字段
+        
+        # 更新conversation_id用于下一轮对话
+        new_conversation_id = result.get("conversation_id", "")
+        if new_conversation_id:
+            _dify_conversation_id = new_conversation_id
         
         if not full_text:
-            yield "百炼SDK返回空响应"
+            yield "DIFY API返回空响应"
             return
         
         # 清理文本：移除markdown格式，去除多余空白
@@ -150,20 +149,31 @@ def ask_ai_bailian_stream(text, conversation_history=None):
         # 返回完整文本（不分割句子）
         yield cleaned_text
             
+    except requests.exceptions.RequestException as e:
+        # 发生请求异常时重置conversation_id
+        _dify_conversation_id = None
+        if hasattr(e, 'response') and e.response:
+            try:
+                error_detail = e.response.json()
+                yield f"DIFY API调用失败: {e} - {error_detail}"
+            except:
+                yield f"DIFY API调用失败: {e} - {e.response.text}"
+        else:
+            yield f"DIFY API调用失败: {e}"
     except Exception as e:
-        # 发生异常时重置session_id
-        _bailian_session_id = None
-        yield f"百炼SDK调用失败: {str(e)}"
+        # 发生其他异常时重置conversation_id
+        _dify_conversation_id = None
+        yield f"DIFY API调用失败: {str(e)}"
 
 
-def reset_bailian_session():
+def reset_dify_session():
     """
-    重置百炼SDK会话
+    重置DIFY会话
     用于开始新的对话或处理错误后重置
     """
-    global _bailian_session_id
-    _bailian_session_id = None
-    return "百炼SDK会话已重置"
+    global _dify_conversation_id
+    _dify_conversation_id = None
+    return "DIFY会话已重置"
 
 
 def ask_ai_general(text):
@@ -216,14 +226,14 @@ def ask_ai(text, use_stream_callback=None, conversation_history=None):
     
     # 2. 根据类型处理
     if query_type == "法律案例":
-        # 收集所有文本（ask_ai_bailian_stream现在只返回一个完整文本）
+        # 使用DIFY API处理法律案例（ask_ai_dify_stream返回生成器）
         full_response = ""
-        for sentence in ask_ai_bailian_stream(text, conversation_history):
+        for sentence in ask_ai_dify_stream(text, conversation_history):
             full_response += sentence + " "
         
         full_response = full_response.strip()
         if not full_response:
-            full_response = "百炼SDK无返回结果"
+            full_response = "DIFY API无返回结果"
         
         # 如果提供了回调函数，调用它并返回None（避免重复输出）
         if use_stream_callback is not None:

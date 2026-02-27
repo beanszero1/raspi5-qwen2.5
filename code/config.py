@@ -36,11 +36,13 @@ SERVICE_CHECK_TIMEOUT = 5  # 服务检查超时时间
 # --- 唤醒词配置 ---
 WAKE_WORDS = ["助手", "你好", "请问", "帮助"]
 
-# --- 百炼SDK配置 ---
-BAILIAN_APP_ID = "a8877ad86xxxxxxf3486907efae88"
-# nano ~/.bashrc
-# API_KEY从环境变量DASHSCOPE_API_KEY读取
-
+# --- DIFY配置 ---
+DIFY_API_BASE_URL = "http://192.168.31.147:5001"  # DIFY服务地址
+DIFY_API_ENDPOINT = "/v1/chat-messages"  # DIFY API端点
+DIFY_API_KEY_ENV = "DIFY_API_KEY"  # 环境变量名称
+DIFY_RESPONSE_MODE = "blocking"  # 响应模式：blocking阻塞式，streaming流式
+DIFY_USER_ID = "raspberry-pi-voice-assistant"  # 用户ID
+DIFY_TIMEOUT = 30  # API请求超时时间（秒）
 
 # --- 任务分类配置 ---
 CLASSIFICATION_PROMPT = """
@@ -62,15 +64,19 @@ SYSTEM_PROMPT = """
 你是一个基础法律问答助手,作用是回答用户有关法律相关的问题。
 请仔细理解用户的问题，然后给出有帮助的回答。
 回答不要分点作答，用一句话概括。
-回答要简洁，控制在30~50字之内。
-重要：输出必须为纯文本，禁止使用任何特殊格式，包括但不限于：
-- 星号(*)、下划线(_)、反斜杠等Markdown符号。
-- LaTeX数学表达式。
-- 加粗、斜体、代码块等任何格式化标记。
-请直接以普通文本形式提供回答，避免任何符号或格式干扰。
-不要简单地重复用户的问题，要进行思考并提供有用的信息。
+回答要简洁，控制在30~40字之内。
 如果用户的问题不清楚，可以请求澄清。
 """
+
+# --- OLED显示配置 ---
+OLED_ENABLED = True  # 是否启用OLED显示
+OLED_WIDTH = 128  # OLED屏幕宽度
+OLED_HEIGHT = 64  # OLED屏幕高度
+OLED_FONT_SIZE = 10  # 字体大小 (10px)
+OLED_LINE_HEIGHT = 12  # 行高
+OLED_I2C_PORT = 1  # I2C端口
+OLED_I2C_ADDRESS = 0x3C  # I2C地址 (通常为0x3C或0x3D)
+OLED_STARTUP_ANIMATION_DURATION = 2.0  # 开机动画持续时间(秒)
 
 # --- 音频处理配置 ---
 MIN_TEXT_LENGTH = 2  # 最小文本长度

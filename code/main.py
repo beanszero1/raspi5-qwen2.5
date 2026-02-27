@@ -5,11 +5,19 @@ import time
 import sys
 
 import config
-import keyboard_listener
-import asr
 import model_api
+import asr
 import tts
+import oled_display
+import sys
+import os
+
+# 添加utils目录到Python路径，以便导入子目录中的模块
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
+
+# 导入utils目录中的模块
 import check_utils
+import keyboard_listener
 import logging_utils
 
 # 设置日志记录
@@ -27,10 +35,27 @@ def check_services():
     return True
 
 
-def _tts_stream_callback(sentence):
-    """TTS流式回调函数，将句子添加到TTS队列"""
+def _oled_tts_stream_callback(sentence):
+    """
+    集成了OLED显示的TTS流式回调函数
+    1. 将AI输出显示到OLED屏幕
+    2. 将句子添加到TTS队列进行语音合成
+    """
     if sentence and sentence.strip():
+        # 显示AI输出到OLED
+        if config.OLED_ENABLED:
+            try:
+                oled_display.display_ai_output(sentence.strip())
+            except Exception as e:
+                logger.error(f"OLED显示AI输出失败: {e}")
+        
+        # 添加到TTS队列进行语音合成
         tts.speak_stream(sentence.strip())
+
+
+def _tts_stream_callback(sentence):
+    """TTS流式回调函数（保持向后兼容）"""
+    _oled_tts_stream_callback(sentence)
 
 
 # 现在使用百炼SDK内置的session_id机制实现多轮对话
@@ -54,6 +79,13 @@ def process_recorded_audio():
         sys.stdout.write(f"\r识别结果: {user_text}\n")
         sys.stdout.flush()
         
+        # 显示用户输入到OLED
+        if config.OLED_ENABLED:
+            try:
+                oled_display.display_user_input(user_text)
+            except Exception as e:
+                logger.error(f"OLED显示用户输入失败: {e}")
+        
         # 简单唤醒词检测
         has_wake_word = any(keyword in user_text for keyword in config.WAKE_WORDS)
         should_process = has_wake_word or len(user_text) > config.MIN_NON_WAKE_TEXT_LENGTH - 1
@@ -62,16 +94,12 @@ def process_recorded_audio():
             sys.stdout.write("\r正在思考...\n")
             sys.stdout.flush()
             
-            # 使用流式回调处理
-            # 使用百炼SDK内置的session_id机制，不再需要传入本地历史
-            # ask_ai现在：使用回调时返回None，不使用回调时返回文本
-            # 无论哪种情况，TTS线程都会输出文本，所以这里不需要再输出
-            reply = model_api.ask_ai(user_text, use_stream_callback=_tts_stream_callback, conversation_history=None)
+            # 使用集成了OLED显示的回调函数
+            reply = model_api.ask_ai(user_text, use_stream_callback=_oled_tts_stream_callback, conversation_history=None)
             
             # 注意：现在不输出回复文本，因为TTS线程已经输出了
             # 只有当ask_ai不使用回调时（理论上不会发生），才需要输出
             if reply and reply.strip():
-
                 pass
     else:
         sys.stdout.write("\r未识别到有效语音\n")
@@ -82,6 +110,15 @@ def process_recorded_audio():
 
 def main():
     """主循环"""
+    # 初始化OLED显示（如果启用）
+    if config.OLED_ENABLED:
+        try:
+            # 获取OLED实例，触发开机动画
+            oled = oled_display.get_oled_instance()
+            print("OLED初始化完成")
+        except Exception as e:
+            logger.error(f"OLED初始化失败: {e}")
+    
     print("\n语音助手就绪！")
     print("提示：按下 空格键 开始/停止录音，按下 Q 键可以退出程序")
     
@@ -122,6 +159,16 @@ def main():
         print("资源清理完成")
 
 if __name__ == "__main__":
+    # 先初始化OLED（如果启用），这样程序启动就能立即显示动画
+    if config.OLED_ENABLED:
+        try:
+            # 获取OLED实例，这会触发开机动画
+            oled = oled_display.get_oled_instance()
+            print("OLED开机动画显示中...")
+        except Exception as e:
+            logger.error(f"OLED初始化失败: {e}")
+    
+    # 然后检查服务
     if check_services():
         main()
     else:

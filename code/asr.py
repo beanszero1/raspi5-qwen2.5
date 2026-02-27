@@ -15,6 +15,11 @@ import requests
 import sys
 from ctypes import *
 import config
+
+# 添加utils目录到Python路径，以便导入子目录中的模块
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
 import logging_utils
 
 # 设置日志

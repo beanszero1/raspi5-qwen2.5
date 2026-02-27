@@ -52,30 +52,19 @@ def check_ollama_service():
         return False, f"无法连接Ollama服务: {e}", []
 
 
-def check_dashscope_service():
+def check_dify_service():
     """
-    检查dashscope库和环境变量配置
+    检查DIFY环境变量配置
     
     Returns:
         tuple: (bool, str) 是否可用, 错误信息
     """
-    try:
-        # 检查dashscope库是否安装
-        from dashscope import Application
-        dashscope_available = True
-    except ImportError:
-        return False, "dashscope库未安装，请运行: pip install dashscope"
-    
     # 检查环境变量
-    api_key = os.getenv("DASHSCOPE_API_KEY")
+    api_key = os.getenv(config.DIFY_API_KEY_ENV)
     if not api_key:
-        return False, "环境变量DASHSCOPE_API_KEY未设置，请在~/.bashrc中配置"
+        return False, f"环境变量{config.DIFY_API_KEY_ENV}未设置，法律案例查询功能将不可用"
     
-    # 检查百炼应用ID
-    if not config.BAILIAN_APP_ID:
-        return False, "百炼应用ID未配置，请在config.py中设置BAILIAN_APP_ID"
-    
-    return True, "百炼SDK配置正常"
+    return True, "DIFY配置正常"
 
 
 def check_all_services():
@@ -120,16 +109,16 @@ def check_all_services():
         print(f"警告: {warning_msg}")
         logger.warning(warning_msg)
     
-    print("检查百炼SDK配置...")
-    # 检查百炼SDK配置
-    dashscope_ok, dashscope_msg = check_dashscope_service()
-    if not dashscope_ok:
-        print(f"百炼SDK配置警告: {dashscope_msg}")
-        logger.warning(f"百炼SDK配置警告: {dashscope_msg}")
+    print("检查DIFY配置...")
+    # 检查DIFY配置
+    dify_ok, dify_msg = check_dify_service()
+    if not dify_ok:
+        print(f"DIFY配置警告: {dify_msg}")
+        logger.warning(f"DIFY配置警告: {dify_msg}")
         print("注意: 法律案例查询功能将不可用，但其他功能正常")
         logger.warning("法律案例查询功能将不可用，但其他功能正常")
     else:
-        print(f"百炼SDK配置正常")
-        logger.info(f"百炼SDK配置正常")
+        print(f"DIFY配置正常")
+        logger.info(f"DIFY配置正常")
     
     return True

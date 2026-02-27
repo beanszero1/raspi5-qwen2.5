@@ -136,3 +136,7 @@ vosk==0.3.45
 websocket-client==1.9.0
 websockets==11.0.3
 yarl==1.22.0
+
+# OLED显示相关依赖
+luma.oled==3.12.0
+luma.core==2.3.1
