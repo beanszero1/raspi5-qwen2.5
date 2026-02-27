@@ -209,16 +209,21 @@ source ~/.bashrc
 
 ### 启动程序
 ```bash
-# 确保在虚拟环境中
+# 本地服务器
+## 使用Docker部署Dify
+## 登录账户后,配置"设置"中的服务供应商
+## 配置知识库，搭建工作流应用后即可使用API_KEY访问服务
+
+# 树莓派部分
+## 确保在虚拟环境中
 source ~/your_venv/bin/activate
 
 cd ~/.../raspi5-qwen2.5/SenseVoice
 
-# 启动API服务,第一次启动可能会自动下载SenseVoice模型的本体文件
+## 启动API服务,第一次启动可能会自动下载SenseVoice模型的本体文件
 python api.py
-
-# 
-# 运行主程序
+ 
+## 运行主程序
 cd ~/.../raspi5-qwen2.5/code
 python main.py
 ```
