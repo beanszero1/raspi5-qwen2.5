@@ -37,7 +37,7 @@ SERVICE_CHECK_TIMEOUT = 5  # 服务检查超时时间
 WAKE_WORDS = ["助手", "你好", "请问", "帮助"]
 
 # --- DIFY配置 ---
-DIFY_API_BASE_URL = "http://192.168.31.147:5001"  # DIFY服务地址,由本地服务器提供应用服务
+DIFY_API_BASE_URL = "http://192.168.31.147:5001"  # DIFY服务地址
 DIFY_API_ENDPOINT = "/v1/chat-messages"  # DIFY API端点
 DIFY_API_KEY_ENV = "DIFY_API_KEY"  # 环境变量名称
 DIFY_RESPONSE_MODE = "blocking"  # 响应模式：blocking阻塞式，streaming流式
@@ -76,9 +76,9 @@ OLED_FONT_SIZE = 10  # 字体大小 (10px)
 OLED_LINE_HEIGHT = 12  # 行高
 OLED_I2C_PORT = 1  # I2C端口
 OLED_I2C_ADDRESS = 0x3C  # I2C地址 (通常为0x3C或0x3D)
-OLED_STARTUP_ANIMATION_DURATION = 2.0  # 开机动画持续时间(秒)
+OLED_STARTUP_ANIMATION_DURATION = 7.0  # 开机动画持续时间(秒)
+OLED_SHOW_BORDER = False  # 是否显示完整边框
 
 # --- 音频处理配置 ---
 MIN_TEXT_LENGTH = 2  # 最小文本长度
 MIN_NON_WAKE_TEXT_LENGTH = 3 # 非唤醒词的最小文本长度
-
