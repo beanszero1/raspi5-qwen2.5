@@ -1,19 +1,28 @@
 # 树莓派语音助手
 
-一个运行在树莓派5上的中文语音助手系统，结合了本地AI模型、离线语音识别和语音合成技术。
+基于树莓派5的开源中文语音助手，该系统结合本地Qwen2.5模型与Dify开源法律知识库，智能识别问题类型，提供精准回答。支持离线语音识别、语音合成、OLED屏幕实时显示和语音唤醒功能。模块化设计便于扩展，适用于家庭助理、教育学习和隐私敏感的智能交互场景。
 
 
-## 项目概述
 
-本项目实现了一个在树莓派上运行的智能语音助手，具有以下特点：
-- **完全离线运行**：所有处理都在本地完成，无需网络连接
-- **中文语音交互**：支持中文语音识别和语音合成
-- **本地AI模型**：使用Qwen2.5:0.5b轻量模型进行简单的任务分类
-- **接入百炼平台**：实现原有中文语音交互的基础上，支持快速部署百炼平台应用。
+**核心特性**：
+
+- 智能任务分类：自动区分法律案例与通用问题
+- 本地优先：Qwen2.5模型本地运行，保护隐私
+- 离线语音：SenseVoice语音识别，无需云端
+- 视觉反馈：OLED屏幕实时显示对话内容
+- 模块化设计：各组件可独立替换升级
 
 
 
 ## 更新日志
+
+### [2026/2/27]
+
+将阿里云百炼平台提供的知识库应用服务，转换到本地服务器使用Dify开源平台部署的应用服务。
+
+添加了OLED屏幕相关模块，用于展示每次用户与AI的对话。
+
+
 
 ### [2026/2/5]
 
@@ -149,45 +158,49 @@ sudo systemctl start ollama
 
 
 
-### 4. 阿里百炼平台和DASHSCOPE配置
 
-使用前需要设置以下环境变量：
+
+### 4. Dify开源平台配置
+
+Dify是一个开源LLM应用开发平台，本项目使用Dify来处理法律案例问答。系统会自动判断用户问题类型，如果是法律相关问题会转发到Dify应用进行处理。
+
+#### 部署Dify服务
+
+1. **安装Dify**（参考官方文档：https://docs.dify.ai/getting-started/install-self-hosted）
+   ```bash
+   # 使用Docker Compose安装（推荐）
+   git clone https://github.com/langgenius/dify.git
+   cd dify/docker
+   docker compose up -d
+   ```
+
+2. **配置Dify应用**
+   - 访问Dify控制台（默认地址：http://localhost）
+   - 创建新的对话型应用
+   - 配置知识库（上传法律文档）或使用工作流
+   - 获取应用API密钥
+
+#### 配置环境变量
+
+在树莓派上设置Dify环境变量：
 
 ```bash
-# Linux/Mac
-export ALIBABA_CLOUD_ACCESS_KEY_ID='您的阿里云访问密钥ID'
-export ALIBABA_CLOUD_ACCESS_KEY_SECRET='您的阿里云访问密钥密码'
-export WORKSPACE_ID='您的阿里云百炼业务空间ID'
+# 设置Dify API密钥
+export DIFY_API_KEY="你的Dify应用API密钥"
 
-# 注意这个DASHSCOPE与百炼实际上是阿里的两个平台
-# https://dashscope.console.aliyun.com/apiKey
-export DASHSCOPE_APP_ID="你的应用ID"
-export DASHSCOPE_API_KEY="你的API密钥"
+# 添加到.bashrc文件永久生效
+echo 'export DIFY_API_KEY="你的Dify应用API密钥"' >> ~/.bashrc
 
+
+# 重新加载配置
+source ~/.bashrc
 ```
 
-其中WORKSPACE_ID可以在左下角的“业务空间详情“查看。
+#### 验证配置
 
+启动程序时，系统会自动检查Dify服务连接。如果配置正确，会显示"DIFY服务检查通过"。
 
-
-ALIBABA_CLOUD_ACCESS_KEY_ID和SECRET需要在RAM控制台中配置。
-
-需要在左下角的“业务空间”上方的权限管理中，添加你的RAM角色。
-
-
-
-```
-#nano ~/.bashrc
-#添加到.bashrc文件的末尾,在百炼平台找到相应参数
-
-export ALIBABA_CLOUD_ACCESS_KEY_ID='xxxxxxxxxxxxxxx'
-export ALIBABA_CLOUD_ACCESS_KEY_SECRET='xxxxxxxxxxxxxxx'
-export WORKSPACE_ID='xxxxxxxx'
-
-#source ~/.bashrc
-```
-
- 
+**注意**：如果不需要Dify服务或未配置环境变量，系统会自动回退到本地Qwen2.5模型处理所有问题。
 
 
 
@@ -221,17 +234,43 @@ python main.py
 
 ### 配置说明
 
-所有配置都在 `config.py` 文件中，可以修改以下参数：
+所有配置都在 `config.py` 文件中，主要配置参数如下：
 
+#### AI模型配置
+```python
+AI_MODEL = "qwen2.5:0.5b"     # 本地Ollama模型
+OLLAMA_URL = "http://127.0.0.1:11434/api/chat"  # Ollama服务地址
 ```
-AI_MODEL = "qwen2.5:0.5b"     
 
-BAILIAN_APP_ID = "a8877ad86xxxxxxf3486907efae88"
-
-CLASSIFICATION_PROMPT = """
-请判断以下问题类型：
-"""
+#### Dify服务配置
+```python
+DIFY_API_BASE_URL = "http://192.168.31.147:5001"  # Dify服务地址
+DIFY_API_ENDPOINT = "/v1/chat-messages"           # Dify API端点
+DIFY_API_KEY_ENV = "DIFY_API_KEY"                 # 环境变量名称
 ```
+
+#### 语音识别配置
+```python
+SENSEVOICE_API_URL = "http://127.0.0.1:7860/api/v1/asr"  # SenseVoice服务地址
+SAMPLE_RATE = 16000       # 音频采样率
+```
+
+#### OLED显示配置
+```python
+OLED_ENABLED = True                           # 是否启用OLED显示
+OLED_WIDTH = 128                              # OLED屏幕宽度
+OLED_HEIGHT = 64                              # OLED屏幕高度
+OLED_FONT_SIZE = 10                           # 字体大小 (10px)
+OLED_STARTUP_ANIMATION_DURATION = 2.0         # 开机动画持续时间(秒)
+OLED_SHOW_BORDER = False                      # 是否显示完整边框
+```
+
+#### 唤醒词配置
+```python
+WAKE_WORDS = ["助手", "你好", "请问", "帮助"]  # 唤醒词列表
+```
+
+**注意**：百炼SDK已从项目中移除，法律案例问答现在由Dify开源平台处理。
 
 
 
