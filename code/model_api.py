@@ -58,7 +58,7 @@ def classify_query(text):
 
 def ask_ai_bailian_stream(text, conversation_history=None):
     """
-    使用百炼SDK进行非流式调用（法律案例专用）
+    使用百炼SDK进行非流式调用
     在用户问题后添加"将回答总结成30~50字左右"以缩短回答
     使用百炼SDK内置的session_id机制实现多轮对话记忆
     （conversation_history参数保留但不使用，仅用于兼容性）
