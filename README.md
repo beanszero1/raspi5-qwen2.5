@@ -166,7 +166,7 @@ Dify是一个开源LLM应用开发平台，本项目使用Dify来处理法律案
 
 #### 部署Dify服务
 
-1. **安装Dify**（参考官方文档：https://docs.dify.ai/getting-started/install-self-hosted）
+1. **安装Dify**  参考官方文档：https://docs.dify.ai/getting-started/install-self-hosted
    ```bash
    # 使用Docker Compose安装（推荐）
    git clone https://github.com/langgenius/dify.git
@@ -175,7 +175,7 @@ Dify是一个开源LLM应用开发平台，本项目使用Dify来处理法律案
    ```
 
 2. **配置Dify应用**
-   - 访问Dify控制台（默认地址：http://localhost）
+   - 访问Dify控制台  默认地址：http://localhost
    - 创建新的对话型应用
    - 配置知识库（上传法律文档）或使用工作流
    - 获取应用API密钥
@@ -323,6 +323,8 @@ ctl.!default {
 - ASR模块：替换为其他语音识别引擎
 - TTS模块：替换为其他语音合成引擎
 - AI模块：替换为其他本地AI模型
+
+
 
 
 
