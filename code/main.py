@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
 import check_utils
 import keyboard_listener
 import logging_utils
+import timing_utils
 
 # 设置日志记录
 logger = logging_utils.setup_module_logging("main")
@@ -57,9 +58,6 @@ def _tts_stream_callback(sentence):
     """TTS流式回调函数（保持向后兼容）"""
     _oled_tts_stream_callback(sentence)
 
-
-# 现在使用百炼SDK内置的session_id机制实现多轮对话
-# 不再需要本地存储对话历史
 
 
 def process_recorded_audio():

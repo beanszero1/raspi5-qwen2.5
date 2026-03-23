@@ -36,20 +36,25 @@ SERVICE_CHECK_TIMEOUT = 5  # 服务检查超时时间
 # --- 唤醒词配置 ---
 WAKE_WORDS = ["助手", "你好", "请问", "帮助"]
 
+# --- llama.cpp OpenAI兼容API配置 ---
+LLAMACPP_API_BASE_URL = "http://127.0.0.1:8080/v1"  # OpenAI兼容API基础URL
+LLAMACPP_CHAT_ENDPOINT = "/chat/completions"  # 聊天端点
+LLAMACPP_API_URL = "http://127.0.0.1:8080/v1/chat/completions"  # 完整URL
+
 # --- DIFY配置 ---
-DIFY_API_BASE_URL = "http://192.168.31.147:5001"  # DIFY服务地址
-DIFY_API_ENDPOINT = "/v1/chat-messages"  # DIFY API端点
-DIFY_API_KEY_ENV = "DIFY_API_KEY"  # 环境变量名称
-DIFY_RESPONSE_MODE = "blocking"  # 响应模式：blocking阻塞式，streaming流式
-DIFY_USER_ID = "raspberry-pi-voice-assistant"  # 用户ID
-DIFY_TIMEOUT = 30  # API请求超时时间（秒）
+# DIFY_API_BASE_URL = "http://192.168.31.218:5001"  # DIFY服务地址
+# DIFY_API_ENDPOINT = "/v1/chat-messages"  # DIFY API端点
+# DIFY_API_KEY_ENV = "DIFY_API_KEY"  # 环境变量名称
+# DIFY_RESPONSE_MODE = "blocking"  # 响应模式：blocking阻塞式，streaming流式
+# DIFY_USER_ID = "raspberry-pi-voice-assistant"  # 用户ID
+# DIFY_TIMEOUT = 30  # API请求超时时间（秒）
 
 # --- 任务分类配置 ---
 CLASSIFICATION_PROMPT = """
 请判断以下问题类型：
 1. 法律案例：涉及具体案件、违法行为、判罚、纠纷等（如：过马路撞到人、邻居噪音投诉、盗窃、金融犯罪）
 2. 通用问题：日常对话、知识问答、闲聊等
-3. 其他专业知识：特定领域专业知识（医学、工程、编程等）
+3. 其他专业知识：特定领域专业知识（医学、工程、编程，人工智能，嵌入式(单片机)等）
 只需回答"法律案例"、"通用问题"或"其他专业知识"。
 """
 
@@ -76,9 +81,21 @@ OLED_FONT_SIZE = 10  # 字体大小 (10px)
 OLED_LINE_HEIGHT = 12  # 行高
 OLED_I2C_PORT = 1  # I2C端口
 OLED_I2C_ADDRESS = 0x3C  # I2C地址 (通常为0x3C或0x3D)
-OLED_STARTUP_ANIMATION_DURATION = 7.0  # 开机动画持续时间(秒)
-OLED_SHOW_BORDER = False  # 是否显示完整边框
+OLED_STARTUP_ANIMATION_DURATION = 7.0  # 开机动画持续时间
+OLED_SHOW_BORDER = False  # 是否显示完整边框 
 
 # --- 音频处理配置 ---
 MIN_TEXT_LENGTH = 2  # 最小文本长度
 MIN_NON_WAKE_TEXT_LENGTH = 3 # 非唤醒词的最小文本长度
+
+# --- 计时功能配置 ---
+TIMING_ENABLED = True  # 是否启用计时功能
+timing_data = {
+    "start_recording": 0.0,      # 开始录音时间戳
+    "end_recording": 0.0,        # 录音结束时间戳
+    "asr_complete": 0.0,         # 语音识别完成时间戳
+    "ai_start": 0.0,             # AI思考开始时间戳
+    "ai_complete": 0.0,          # AI回答生成完成时间戳
+    "tts_start": 0.0,            # 语音合成开始时间戳
+    "tts_playback_start": 0.0,   # 语音播放开始时间戳
+}

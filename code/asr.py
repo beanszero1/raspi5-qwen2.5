@@ -16,11 +16,12 @@ import sys
 from ctypes import *
 import config
 
-# 添加utils目录到Python路径，以便导入子目录中的模块
+
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
 import logging_utils
+import timing_utils
 
 # 设置日志
 logger = logging_utils.setup_module_logging("asr")
@@ -86,7 +87,9 @@ def _init_asr():
     # 输出回车换行，确保光标在新行开始
     sys.stdout.write('\r\n')
     sys.stdout.flush()
-    tts.speak("您好，有什么可以为您服务的吗")
+    # 初始化时重置计时数据，避免初始问候语触发计时摘要
+    timing_utils.reset_timing_data()
+    # tts.speak("您好，有什么可以为您服务的吗")
 
 
 def cleanup_asr():
@@ -270,9 +273,13 @@ def recognize_buffer(audio_buffer):
                 
                 if text:
                     logger.info(f"识别结果: '{text}'")
+                    # 记录语音识别完成时间戳
+                    timing_utils.record_timestamp("asr_complete")
                     return text
                 else:
                     logger.debug("SenseVoice识别结果为空")
+                    # 即使结果为空也记录时间戳
+                    timing_utils.record_timestamp("asr_complete")
                     return ""
             else:
                 logger.error(f"SenseVoice FastAPI返回错误: {response.status_code} - {response.text}")
