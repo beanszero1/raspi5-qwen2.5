@@ -9,7 +9,6 @@
 </p>
 <p align="center">
 <img src="https://img.shields.io/badge/python-3.13-blue">
-
 <a href="https://github.com/beanszero1/ekhoa/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a>
 <a href="https://github.com/beanszero1/ekhoa/pulls"><img src="https://img.shields.io/badge/PR-welcome-55EB99.svg" alt="PRs Welcome"></a>
 <p>
