@@ -56,7 +56,7 @@ Ekhoa is an open-source Chinese voice assistant based on Raspberry Pi 5. The sys
 
 ## 🛠️ Hardware Requirements
 
-- **Raspberry Pi 5** with at least 4GB RAM
+- **Raspberry Pi 5** with at least 8GB RAM
 - **Microphone**: USB microphone supporting 16kHz sampling rate
 - **Speaker or Headphone** for audio output
 - **OLED Display** (optional, for visual feedback)
