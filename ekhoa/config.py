@@ -30,24 +30,22 @@ TTS_VOLUME = 0.8  # 语音合成音量
 OLLAMA_URL = "http://127.0.0.1:11434/api/chat"
 OLLAMA_TAGS_URL = "http://127.0.0.1:11434/api/tags"
 AI_MODEL = "qwen2.5:0.5b"     
-AI_TIMEOUT = 15  # AI请求超时时间
+AI_TIMEOUT = 60  # AI请求超时时间（秒）
 SERVICE_CHECK_TIMEOUT = 5  # 服务检查超时时间
+
+# --- llama.cpp 配置 ---
+LLAMACPP_API_BASE_URL = "http://127.0.0.1:8080"  # llama.cpp 服务地址
 
 # --- 唤醒词配置 ---
 WAKE_WORDS = ["助手", "你好", "请问", "帮助"]
 
-# --- llama.cpp OpenAI兼容API配置 ---
-LLAMACPP_API_BASE_URL = "http://127.0.0.1:8080/v1"  # OpenAI兼容API基础URL
-LLAMACPP_CHAT_ENDPOINT = "/chat/completions"  # 聊天端点
-LLAMACPP_API_URL = "http://127.0.0.1:8080/v1/chat/completions"  # 完整URL
-
 # --- DIFY配置 ---
-# DIFY_API_BASE_URL = "http://192.168.31.218:5001"  # DIFY服务地址
-# DIFY_API_ENDPOINT = "/v1/chat-messages"  # DIFY API端点
-# DIFY_API_KEY_ENV = "DIFY_API_KEY"  # 环境变量名称
-# DIFY_RESPONSE_MODE = "blocking"  # 响应模式：blocking阻塞式，streaming流式
-# DIFY_USER_ID = "raspberry-pi-voice-assistant"  # 用户ID
-# DIFY_TIMEOUT = 30  # API请求超时时间（秒）
+DIFY_API_BASE_URL = "http://192.168.31.218:5001"  # DIFY服务地址
+DIFY_API_ENDPOINT = "/v1/chat-messages"  # DIFY API端点
+DIFY_API_KEY_ENV = "DIFY_API_KEY"  # 环境变量名称
+DIFY_RESPONSE_MODE = "blocking"  # 响应模式：blocking阻塞式，streaming流式
+DIFY_USER_ID = "raspberry-pi-voice-assistant"  # 用户ID
+DIFY_TIMEOUT = 30  # API请求超时时间（秒）
 
 # --- 任务分类配置 ---
 CLASSIFICATION_PROMPT = """
@@ -87,15 +85,3 @@ OLED_SHOW_BORDER = False  # 是否显示完整边框
 # --- 音频处理配置 ---
 MIN_TEXT_LENGTH = 2  # 最小文本长度
 MIN_NON_WAKE_TEXT_LENGTH = 3 # 非唤醒词的最小文本长度
-
-# --- 计时功能配置 ---
-TIMING_ENABLED = True  # 是否启用计时功能
-timing_data = {
-    "start_recording": 0.0,      # 开始录音时间戳
-    "end_recording": 0.0,        # 录音结束时间戳
-    "asr_complete": 0.0,         # 语音识别完成时间戳
-    "ai_start": 0.0,             # AI思考开始时间戳
-    "ai_complete": 0.0,          # AI回答生成完成时间戳
-    "tts_start": 0.0,            # 语音合成开始时间戳
-    "tts_playback_start": 0.0,   # 语音播放开始时间戳
-}
