@@ -16,7 +16,6 @@ import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
 import logging_utils
-import timing_utils
 
 from config import TTS_RATE, TTS_VOLUME, TTS_QUEUE_SIZE
 
@@ -109,8 +108,6 @@ def _tts_worker():
             
             try:
                 engine.say(text)
-                # 记录语音播放开始时间戳
-                timing_utils.record_timestamp("tts_playback_start")
                 engine.runAndWait()
             except Exception as e:
                 logger.error(f"TTS 错误: {e}")
@@ -148,15 +145,11 @@ def speak(text):
     _start_tts_system()
     
     try:
-        # 记录语音合成开始时间戳
-        timing_utils.record_timestamp("tts_start")
         # 将文本放入队列
         tts_queue.put(text, block=True, timeout=5)
         logger.debug(f"TTS队列添加文本: {text[:50]}...")
     except queue.Full:
         logger.warning("TTS队列已满，丢弃文本")
-        # 队列满时也记录时间戳，因为已经开始处理
-        timing_utils.record_timestamp("tts_start")
     except Exception as e:
         logger.error(f"添加TTS队列失败: {e}")
         # 回退到直接合成
