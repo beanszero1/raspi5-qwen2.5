@@ -32,11 +32,18 @@ Ekhoa is an open-source Chinese voice assistant based on Raspberry Pi 5. The sys
 - **📺 Visual Feedback**: OLED screen displays conversation content in real-time
 - **🧩 Modular Design**: Each component can be independently replaced and upgraded
 
+## 📸 Screenshots
 
+<div align="center">
+  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example1.png" width="300"/>
+  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example2.png" width="300"/>
+  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example3.png" width="300"/>
+</div>
 
 ## 🎉 What's New
 
 
+- 🔥 **[2026.04.02]** Added WebUI interface with text chat and voice input support, fixed audio format conversion, and optimized AI timeout settings
 - 🔥 **[2026.03.23]** Added support for llama.cpp deployment instead of Ollama
 - 🔥 **[2026.03.23]** Enhanced recording experience with timing display during and after audio recording
 - 🔥 **[2026.02.27]** Transitioned from Dify platform to fine-tuned qwen2.5-0.5B-Q8_0 model for legal case Q&A
@@ -140,7 +147,7 @@ cd ~/ekhoa/llama.cpp/release/bin
 
 ```bash
 # Install system dependencies
-sudo apt install espeak espeak-ng python3-pyaudio libasound2-dev
+sudo apt install espeak espeak-ng python3-pyaudio libasound2-dev ffmpeg
 
 # Activate virtual environment
 source ~/your_venv/bin/activate
@@ -148,21 +155,26 @@ source ~/your_venv/bin/activate
 # Install Python packages
 pip install -r requirements.txt
 
-# Start SenseVoice API service (first start may automatically download model files)
-cd ~/path/to/ekhoa/SenseVoice
-python api.py
- 
-# Run main program
-cd ~/path/to/ekhoa/code
-python main.py
+# Start all services (llama.cpp, SenseVoice, main program)
+cd ~/path/to/ekhoa/script
+./start_all.sh
+
+# Or start WebUI separately
+cd ~/path/to/ekhoa/ekhoa
+python webui.py
 ```
 
 ### Interaction Methods
 
+**Command Line Mode:**
 1. After program starts, system service check will be performed
 2. After check passes, voice assistant will prompt "Voice assistant startup complete, ready to serve you"
 3. Speak directly into microphone to start conversation
 4. Say wake words (default: "Assistant", "Hello", "Please", "Help") to trigger conversation
+
+**WebUI Mode:**
+1. Open browser and visit `http://127.0.0.1:5000`
+2. Use text input or click microphone button for voice input
 
 ## ⚙️ Configuration
 
@@ -244,6 +256,16 @@ The project uses modular design, allowing easy replacement or extension:
 - **AI Module**: Replace with other local AI models
 - **Display Module**: Replace OLED with other display types
 - **Wake Word Module**: Customize wake word detection logic
+
+
+
+## 📸 Screenshots
+
+<div align="center">
+  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example1.png" width="300"/>
+  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example2.png" width="300"/>
+  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example3.png" width="300"/>
+</div>
 
 ## ❤️ Community & Support
 
