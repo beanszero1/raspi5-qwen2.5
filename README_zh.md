@@ -1,8 +1,9 @@
 <p align="center">
     <br>
-    <img src="https://github.com/beanszero1/ekhoa/blob/main/badge.png" width="200"/>
+    <img src="https://github.com/beanszero1/ekhoa/blob/main/badge.png" width="700"/>
     <br>
 </p>
+
 
 <p align="center">
   中文 &nbsp ｜ &nbsp <a href="README.md">English</a> &nbsp
