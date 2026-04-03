@@ -1,6 +1,10 @@
 <p align="center">
     <br>
-    <img src="https://github.com/beanszero1/ekhoa/blob/main/badge.png" width="800"/>
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/beanszero1/ekhoa/blob/main/pic/badge_black.png">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/beanszero1/ekhoa/blob/main/pic/badge_light.png">
+      <img alt="Raspberry Pi Voice Assistant with Local AI" src="https://github.com/beanszero1/ekhoa/blob/main/pic/badge_light.png" width="600"/>
+    </picture>
     <br>
 </p>
 
