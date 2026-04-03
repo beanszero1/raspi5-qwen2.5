@@ -196,9 +196,11 @@ OLED_SHOW_BORDER = False                      # 是否显示完整边框
 ## 📸 项目截图
 
 <div align="center">
-  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example1.png" width="300"/>
-  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example2.png" width="300"/>
-  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example3.png" width="300"/>
+  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example1.png" width="800"/>
+  <br><br>
+  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example2.png" width="800"/>
+  <br><br>
+  <img src="https://github.com/beanszero1/ekhoa/blob/main/pic/example3.png" width="800"/>
 </div>
 
 ## 🔧 故障排除
