@@ -6,19 +6,17 @@
 """
 
 import os
-import json
-import time
 import wave
-import pyaudio
-import tts
-import requests
 import sys
-from ctypes import *
+import time
+from ctypes import CFUNCTYPE, c_char_p, c_int, cdll
+
+import pyaudio
+import requests
+import tts
+
 import config
 
-
-import sys
-import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'utils'))
 import logging_utils
 
@@ -78,7 +76,7 @@ def _init_asr():
     except Exception as e:
         logger.error(f"ASR初始化失败: {e}")
         logging_utils.restore_stderr()
-        raise e
+        raise
     finally:
         logging_utils.restore_stderr()
     
@@ -134,16 +132,6 @@ def reset_recognizer():
     logger.info("识别器重置（SenseVoice API不需要重置）")
 
 
-def recognize_audio(data):
-    """
-    实时识别音频数据（为兼容性保留，但SenseVoice API不支持实时流式识别）
-    此函数将数据累积到缓冲区，实际识别由recognize_buffer完成
-    """
-    # 这里不做实际识别，因为SenseVoice API需要整个音频文件
-    # 原项目已改为使用录音缓冲区，所以这里返回空字符串
-    return ""
-
-
 def recognize_buffer(audio_buffer):
     """
     处理整个录音缓冲区的数据，返回识别文本
@@ -166,11 +154,8 @@ def recognize_buffer(audio_buffer):
     
     # 保存音频缓冲区为WAV文件
     try:
-        # 确保wav文件夹存在
         wav_dir = os.path.join(os.path.dirname(__file__), "wav")
-        if not os.path.exists(wav_dir):
-            os.makedirs(wav_dir)
-            logger.debug(f"创建wav文件夹: {wav_dir}")
+        os.makedirs(wav_dir, exist_ok=True)
         
         wav_filename = f"recording_{int(time.time())}.wav"
         wav_path = os.path.join(wav_dir, wav_filename)
@@ -204,9 +189,6 @@ def recognize_buffer(audio_buffer):
                 data=data, 
                 timeout=config.SENSEVOICE_TIMEOUT
             )
-            
-            # 清理WAV文件（可选，调试时可保留）
-            # os.remove(wav_path)
             
             if response.status_code == 200:
                 result = response.json()
@@ -293,5 +275,3 @@ def recognize_buffer(audio_buffer):
     except Exception as e:
         logger.error(f"处理录音缓冲区时出错: {e}")
         return ""
-
-
